@@ -11,20 +11,25 @@ import java.util.UUID;
 @Table(name = "habits")
 public class Habit {
     @Id
-    private final UUID id;
+    private UUID id;
     @Column(name = "name", nullable = false, unique = true, length = 25)
     private String name;
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
     @Column(name = "sub_habits", nullable = false)
     @OneToMany
     private final List<Habit> subHabits = new ArrayList<>();
-    @Column(name = "created_at", updatable = false)
-    private final LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Habit(){
+    public Habit(){}
+
+    public Habit(String name, String description){
+        this.name = name;
+        this.description = description;
+
         this.id = UUID.randomUUID();
         this.createdAt = LocalDateTime.now();
     }
@@ -38,6 +43,10 @@ public class Habit {
     }
 
     public void setName(String name) {
+        if(name.equals(this.name)){
+            throw new IllegalArgumentException("You are already using this name, choose another one.");
+        }
+
         this.name = name;
         setUpdatedAt();
     }
@@ -47,6 +56,10 @@ public class Habit {
     }
 
     public void setDescription(String description) {
+        if(description.equals(this.description)){
+            throw new IllegalArgumentException("You are already using this description, choose another one.");
+        }
+
         this.description = description;
         setUpdatedAt();
     }
@@ -55,7 +68,7 @@ public class Habit {
         return subHabits;
     }
 
-    public void setSubHabit(Habit subHabit) {
+    public void addSubHabit(Habit subHabit) {
         this.subHabits.add(subHabit);
     }
 
